@@ -1,10 +1,10 @@
 WITH   ALL_KEYS_IN_TABLE (CONSTRAINT_NAME,CONSTRAINT_TYPE,PARENT_TABLE_NAME,PARENT_COL_NAME,PARENT_COL_NAME_DATA_TYPE,REFERENCE_TABLE_NAME,REFERENCE_COL_NAME) 
 AS
 (
-SELECT  CONSTRAINT_NAME= CAST (PKnUKEY.name AS VARCHAR(60)) ,
-        CONSTRAINT_TYPE=CAST (PKnUKEY.type_desc AS VARCHAR(60)) ,
-        PARENT_TABLE_NAME=CAST (PKnUTable.name AS VARCHAR(60)) ,
-        PARENT_COL_NAME=CAST ( PKnUKEYCol.name AS VARCHAR(60)) ,
+SELECT  CONSTRAINT_NAME= CAST (PKnUKEY.name AS VARCHAR(30)) ,
+        CONSTRAINT_TYPE=CAST (PKnUKEY.type_desc AS VARCHAR(30)) ,
+        PARENT_TABLE_NAME=CAST (PKnUTable.name AS VARCHAR(30)) ,
+        PARENT_COL_NAME=CAST ( PKnUKEYCol.name AS VARCHAR(30)) ,
         PARENT_COL_NAME_DATA_TYPE=  oParentColDtl.DATA_TYPE,        
         REFERENCE_TABLE_NAME='' ,
         REFERENCE_COL_NAME='' 
@@ -22,13 +22,13 @@ FROM sys.key_constraints as PKnUKEY
             ON oParentColDtl.TABLE_NAME=PKnUTable.name
             AND oParentColDtl.COLUMN_NAME=PKnUKEYCol.name
 UNION ALL
-SELECT  CONSTRAINT_NAME= CAST (oConstraint.name AS VARCHAR(60)) ,
+SELECT  CONSTRAINT_NAME= CAST (oConstraint.name AS VARCHAR(30)) ,
         CONSTRAINT_TYPE='FK',
-        PARENT_TABLE_NAME=CAST (oParent.name AS VARCHAR(60)) ,
-        PARENT_COL_NAME=CAST ( oParentCol.name AS VARCHAR(60)) ,
+        PARENT_TABLE_NAME=CAST (oParent.name AS VARCHAR(30)) ,
+        PARENT_COL_NAME=CAST ( oParentCol.name AS VARCHAR(30)) ,
         PARENT_COL_NAME_DATA_TYPE= oParentColDtl.DATA_TYPE,     
-        REFERENCE_TABLE_NAME=CAST ( oReference.name AS VARCHAR(60)) ,
-        REFERENCE_COL_NAME=CAST (oReferenceCol.name AS VARCHAR(60)) 
+        REFERENCE_TABLE_NAME=CAST ( oReference.name AS VARCHAR(30)) ,
+        REFERENCE_COL_NAME=CAST (oReferenceCol.name AS VARCHAR(30)) 
 FROM sys.foreign_key_columns FKC
     INNER JOIN sys.sysobjects oConstraint
             ON FKC.constraint_object_id=oConstraint.id 
@@ -47,3 +47,9 @@ FROM sys.foreign_key_columns FKC
             AND FKC.referenced_column_id=oReferenceCol.column_id/* ID of the column. Is unique within the object.Column IDs might not be sequential.*/
 
 )
+
+select * from   ALL_KEYS_IN_TABLE
+where   
+    PARENT_TABLE_NAME  in ('YOUR_TABLE_NAME') 
+    or REFERENCE_TABLE_NAME  in ('YOUR_TABLE_NAME')
+ORDER BY PARENT_TABLE_NAME,CONSTRAINT_NAME;
